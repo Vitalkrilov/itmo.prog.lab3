@@ -1,1 +1,287 @@
-my_memos/UML/diagram.plantuml
+@startuml
+!theme sketchy-outline
+'!theme cyborg
+skinparam minClassWidth 200
+skinparam nodesep 10
+skinparam ranksep 10
+skinparam minLineSize 10
+skinparam linetype ortho
+
+package vitalkrilov <<Cloud>> {
+    package itmo <<Database>> {
+        package prog <<Node>> {
+            package lab3 {
+                class App {
+                    + {static} main(args: String[]) : void
+                }
+                package items {
+                    interface Takeable {
+                        + notifyTakenBy(entity: LivingEntity) : void
+                    }
+                    '''''
+                    interface Droppable {
+                        + makeDropped() : void
+                    }
+                    interface Sendable {
+                        + makeSent() : void
+                    }
+                    interface InAirSpinnable {
+                        + spinInAirAround() : void
+                    }
+                    enum PosterType {
+                        Theatrical
+                    }
+                    class Poster {
+                        - authors : List<String>
+                        - colorful : boolean
+                        - storyNameAlias : String
+                        - type : PosterType
+                        - currentLocation : Location
+                        - sent : boolean
+                        - dropped : boolean
+                        ----
+                        + Poster(type: PosterType, loc: Location)
+                        'falls and then sets location
+                        + fallTo(loc: Location) : void
+                        + getStoryNameAlias() : String
+                        + setStoryNameAlias(storyNameAlias: String) : void
+                        + addAuthor(author: String) : void
+                        + isColorful() : boolean
+                        + setColorful(state: boolean) : void
+                        ....
+                        + sent() : void
+                        + spinInAirAround() : void
+                        + dropped() : void
+                        + getCurrentLocation() : Location
+                        + setCurrentLocation(loc: Location) : void
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                    '''''
+                    enum ItemCharacteristic {
+                        Police
+                    }
+                    enum WearableItemType {
+                        Cap
+                    }
+                    class WearableItem {
+                        - type : WearableItemType
+                        - characteristics : Set<ItemCharacteristic>
+                        ----
+                        + WearableItem(type: WearableItemType)
+                        'error can be handled here
+                        + addCharacteristicIfCan(characteristic: ItemCharacteristic) : void
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                }
+                package entities {
+                    abstract class LivingEntity {
+                        # currentLocation : Location
+                        ----
+                        # LivingEntity(loc: Location)
+                        ....
+                        + getCurrentLocation() : Location
+                        + setCurrentLocation(loc: Location) : void
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                    '''''
+                    class Bird {
+                        ----
+                        + Bird(loc: Location)
+                        + flyAround() : void
+                        + dropItem(droppableItem: Droppable) : void
+                        ....
+                        + equals(o: Object) : boolean
+                        '+ hashCode() : int
+                        + toString() : String
+                    }
+                    '''''
+                    enum OnBodyPosition {
+                        Forehead
+                        Chest
+                        Belt
+                        Legs
+                        Feet
+                    }
+                    class Hemulen {
+                        - wearSlots : Map<OnBodyPosition, WearableItem>
+                        ----
+                        + Hemulen(loc: Location)
+                        + sit() : void
+                        + sleep() : void
+                        'error can be handled here
+                        + wearIfCan(targetSlot: OnBodyPosition, item: WearableItem) : void
+                        + suspect(msg: Message) : void
+                        + take(item: Takeable) : void
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                }
+                package world {
+                    interface Movable {
+                        + getCurrentLocation() : Location
+                        + setCurrentLocation(loc: Location) : void
+                    }
+                    enum LocationType {
+                        DirectPosition
+                        Bay
+                        Forest
+                        Shore
+                        Meadow
+                        Water
+                        House
+                        Garden
+                        Jail
+                    }
+                    class Location {
+                        - type : LocationType
+                        ----
+                        + Location(type: LocationType)
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                    class DirectPosition {
+                        ~ positionID : int
+                        - commentary : String
+                        - {static} nextID : int
+                        ----
+                        + DirectPosition(commentary: String)
+                        + getCommentary() : String
+                        + setCommentary(commentary: String) : void
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                    enum HouseLocationType {
+                        Roof
+                    }
+                    class House {
+                        - subloc : HouseLocationType
+                        ----
+                        + House(subloc: HouseLocationType)
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                    '''''
+                    enum WeatherType {
+                        Clear
+                        Sunny
+                        PartlySunny
+                        PartlyCloudy
+                        SunAndRain
+                        Raining
+                        Thunderstorms
+                        Snowing
+                        Cloudy
+                        Windy
+                        Rainbow
+                        TornadoesOrHurricanes
+                    }
+                    class WorldsWeatherTypesStorage {
+                        - weatherStatuses : Map<Integer, WeatherType>
+                        ----
+                        + WorldsWeatherTypesStorage()
+                        + setWeather(loc: DirectPosition, weather: WeatherType) : void
+                        'default is Clear for unsetted
+                        + getWeather(loc: DirectPosition) : WeatherType
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                }
+                package others {
+                    enum DayPart {
+                        Sunrise
+                        Morning
+                        Noon
+                        Afternoon
+                        Evening
+                        Night
+                    }
+                    class Date {
+                        - part : DayPart
+                        - dayNumber : int
+                        - {static} storyStartDayNumber : int
+                        ----
+                        + Date(part: DayPart, dayNumber: int)
+                        + {static} getStoryStartDayNumber() : int
+                        + {static} setStoryStartDayNumber(dayNumber: int) : void
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                    '''''
+                    class Sender {
+                        ----
+                        + Sender()
+                        + scheduleSending(item: Sendable, sendOn: Date) : void
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                    '''''
+                    interface MessageReceivingCapable {
+                        + receiveMessage(message: Message) : void
+                    }
+                    enum ReceiversGroupTypes {
+                        Prisoners
+                    }
+                    class ReceiversGroup {
+                        - type : ReceiversGroupTypes
+                        ----
+                        + ReceiversGroup(type: ReceiversGroupTypes)
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                    class Message {
+                        - content : String
+                        - receivers : Set<MessageReceivingCapable>
+                        ----
+                        + Message(content: String)
+                        + getContent() : String
+                        + setContent(content: String) : void
+                        'error can be handled
+                        + registerReceiversIfCan(receiver: MessageReceivingCapable) : void
+                        ....
+                        + equals(o: Object) : boolean
+                        + hashCode() : int
+                        + toString() : String
+                    }
+                }
+                items.Poster ..|> items.Sendable
+                items.Poster ..|> items.InAirSpinnable
+                items.Poster ..|> items.Droppable
+                items.Poster ..|> world.Movable
+                world.DirectPosition --|> world.Location
+                world.House --|> world.Location
+                entities.LivingEntity ..|> world.Movable
+                entities.LivingEntity ..|> others.MessageReceivingCapable
+                ReceiversGroup ..|> others.MessageReceivingCapable
+                items.Poster ..|> items.Takeable
+                items.WearableItem ..|> items.Takeable
+                entities.Bird --|> entities.LivingEntity
+                entities.Hemulen --|> entities.LivingEntity
+            }
+        }
+    }
+}
+@enduml
